@@ -1,3 +1,5 @@
+from __future__ import division
+
 from xml.etree import ElementTree
 import bz2, time
 from contextlib import contextmanager
