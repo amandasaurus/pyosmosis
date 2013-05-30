@@ -227,6 +227,16 @@ def log(log_every=10, prefix=None):
                 print "%sProcessed %d elements" % (prefix, num_elements)
                 time_of_last_msg = now
             
+    return inner
+
+
+@pipeline_element
+def default_tags(**tags):
+    def inner(input_stream):
+        for el in input_stream:
+            for key, value in tags.items():
+                el.tags[key] = el.tags[key] if key in el.tags else value
+            yield el
 
     return inner
 
