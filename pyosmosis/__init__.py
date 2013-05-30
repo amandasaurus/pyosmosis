@@ -261,6 +261,55 @@ def limit(num=0):
     return inner
         
 
+@pipeline_element
+def bbox(top, left, bottom, right):
+    top, left, bottom, right = float(top), float(left), float(bottom), float(right)
+    assert bottom <= top, (top, bottom)
+    assert left <= right, (left, right)
+    assert -90 <= top <= 90
+    assert -90 <= bottom <= 90
+    assert -180 <= left <= 180
+    assert -180 <= right <= 180
+
+    def inner(input_stream):
+        nodes_that_passed = set()
+        ways_that_passed = set()
+        relations_that_passed = set()
+        for el in input_stream:
+            if isinstance(el, Node):
+                lat = float(el.attrs['lat'])
+                lon = float(el.attrs['lon'])
+                if bottom <= lat <= top and left <= lon <= right:
+                    nodes_that_passed.add(el.attrs['id'])
+                    yield el
+            elif isinstance(el, Way):
+                if any(node_id in nodes_that_passed for node_id in el.node_ids):
+                    ways_that_passed.add(el.attrs['id'])
+                    yield el
+            elif isinstance(el, Relation):
+                should_pass = False
+                for member in el.members:
+                    if member['type'] == 'node':
+                        if member['ref'] in nodes_that_passed:
+                            should_pass = True
+                            break
+                    elif member['type'] == 'way':
+                        if member['ref'] in ways_that_passed:
+                            should_pass = True
+                            break
+                    elif member['type'] == 'relation':
+                        if member['ref'] in relations_that_passed:
+                            should_pass = True
+                            break
+                    else:
+                        raise ValueError("Unknown member type", member)
+                if should_pass:
+                    relations_that_passed.add(el.attrs['id'])
+                    yield el
+            else:
+                raise ValueError("Unknown element", el)
+
+    return inner
 
 
 class Pipeline(object):
