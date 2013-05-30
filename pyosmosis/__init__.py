@@ -209,8 +209,6 @@ def blackhole():
 
 @pipeline_element
 def log(log_every=10, prefix=None):
-    # FIXME allow options in cmd line
-
     log_every = float(log_every)
     prefix = prefix or ""
 
