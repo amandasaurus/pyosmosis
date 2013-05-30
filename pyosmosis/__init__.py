@@ -238,6 +238,25 @@ def default_tags(**tags):
 
     return inner
 
+@pipeline_element
+def limit(num=0):
+    num = int(num)
+    def inner(input_stream):
+        num_so_far = 0
+        for el in input_stream:
+            if num > 0:
+                if num_so_far < num:
+                    # below limit
+                    yield el
+                    num_so_far += 1
+                else:
+                    # Reached the max
+                    break
+            else:
+                # No limit, so loop all the way
+                yield el
+
+    return inner
         
 
 
