@@ -119,7 +119,6 @@ def write_xml(filename):
             # FIXME proper streaming XML writer
             fp.write('<?xml version="1.0" encoding="UTF-8"?>\n')
             fp.write('<osm version="0.6" generator="{0}">\n'.format(version_header()))
-            # FIXME generator line & details
 
             for element in input_stream:
                 if isinstance(element, OSMElement):
