@@ -69,13 +69,26 @@ def pipeline_element(func):
     pipeline_elements.append(func)
     return func
 
+def convert_values_to_args_kwargs(function, values):
+    if all('=' in v for v in values):
+        args = []
+        kwargs = dict(v.split("=", ) for v in values)
+    elif not all('=' in v for v in values):
+        args = values
+        kwargs = {}
+    else:
+        raise ValueError
+
+    return args, kwargs
+
 def make_action(elem):
     class Action(argparse.Action):
-        def __call__(self, parser, namespace, value, option_string=None):
+        def __call__(self, parser, namespace, values, option_string=None):
             if not 'pipeline' in namespace:
                 namespace.pipeline = []
 
-            generator = elem(*value)
+            args, kwargs = convert_values_to_args_kwargs(elem, values)
+            generator = elem(*args, **kwargs)
             # FIXME confirm it's a generator
             namespace.pipeline.append(generator)
 
@@ -87,9 +100,7 @@ def add_elements_to_arg_parser(parser):
 
 
         name = elem.__name__.replace("_", "-")
-        args = inspect.getargspec(elem)[0]
-        nargs = len(args)
-        parser.add_argument("--"+name, nargs=nargs, action=make_action(elem))
+        parser.add_argument("--"+name, nargs='*', action=make_action(elem))
 
     return parser
     
