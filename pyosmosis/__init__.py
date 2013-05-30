@@ -209,13 +209,15 @@ def blackhole():
 
 
 @pipeline_element
-def log():
+def log(log_every=10, prefix=None):
     # FIXME allow options in cmd line
+
+    log_every = float(log_every)
+    prefix = prefix or ""
 
     def inner(input_stream):
         num_elements = 0
         time_of_last_msg = 0
-        log_every = 10
         for el in input_stream:
             yield el
 
@@ -223,7 +225,7 @@ def log():
 
             now = time.time()
             if (now - time_of_last_msg) >= log_every:
-                print "Processed %d elements" % num_elements
+                print "%sProcessed %d elements" % (prefix, num_elements)
                 time_of_last_msg = now
             
 
