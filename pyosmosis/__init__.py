@@ -9,8 +9,11 @@ from elements import Node, Way, Relation, OSMElement
 
 version = (0, 0, 1)
 
+def version_string():
+    return "{0}.{1}.{2}".format(*version)
+
 def version_header():
-    return "pyosmosis {0}.{1}.{2}".format(*version)
+    return "pyosmosis {0}".format(version_string())
 
 @contextmanager
 def open_optional_compression(filename, mode="r"):
