@@ -365,7 +365,6 @@ def used_node():
                 # log error?
                 pass
 
-
     return inner
 
 @pipeline_element
@@ -391,8 +390,6 @@ def used_way():
             else:
                 # log error?
                 pass
-
-
 
     return inner
 
