@@ -178,6 +178,28 @@ def reject_relations():
     
 
 @pipeline_element
+def node_key(keyList):
+    keys = keyList.split(",")
+    return whitelist(lambda element: isinstance(element, Node) and any(key in element.tags for key in keys))
+
+@pipeline_element
+def node_key_value(keyValueList):
+    key_values = [x.split(".", 1) for x in keyList.split(",")]
+    return whitelist(lambda element: isinstance(element, Node) and any((key in element.tags and element.tags[key] == value) for key, value in key_values))
+
+# Weirdly osmosis docs say that node_key and way_key behave differently
+# Reproducing this
+@pipeline_element
+def way_key(keyList):
+    keys = keyList.split(",")
+    return whitelist(lambda element: any(key in element.tags for key in keys) if isinstance(element, Way) else True)
+
+@pipeline_element
+def way_key_value(keyValueList):
+    key_values = [x.split(".", 1) for x in keyList.split(",")]
+    return whitelist(lambda element: any((key in element.tags and element.tags[key] == value) for key, value in key_values) if isinstance(element, Way) else True) 
+
+@pipeline_element
 def sort():
     def inner(input_stream):
         nodes, ways, relations = {}, {}, {}
