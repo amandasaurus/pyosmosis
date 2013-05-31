@@ -409,7 +409,7 @@ class Pipeline(object):
         list(self.pipeline)
 
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser()
     add_elements_to_arg_parser(parser)
 
@@ -420,3 +420,5 @@ if __name__ == '__main__':
         pipeline = Pipeline(*args.pipeline)
         pipeline.run()
 
+if __name__ == '__main__':
+    main()
