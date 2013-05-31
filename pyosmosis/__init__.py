@@ -368,6 +368,33 @@ def used_node():
 
     return inner
 
+@pipeline_element
+def used_way():
+    def inner(input_stream):
+        ways = {}
+        used_ways = set()
+        for el in input_stream:
+            if isinstance(el, Node):
+                yield el
+            elif isinstance(el, Way):
+                ways[el.attrs['id']] = el
+            elif isinstance(el, Relation):
+                used_ways.update([x['ref'] for x in el.members if x['type'] == 'way'])
+                yield el
+            else:
+                raise ValueError("Unknown element", el)
+
+        # Now spit out the ways 
+        for way_id in used_ways:
+            if way_id in ways:
+                yield ways[way_id]
+            else:
+                # log error?
+                pass
+
+
+
+    return inner
 
 class Pipeline(object):
     def __init__(self, *elements):
