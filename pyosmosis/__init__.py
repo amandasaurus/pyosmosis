@@ -201,7 +201,7 @@ def sort():
     return inner
 
 @pipeline_element
-def blackhole():
+def write_null():
     def inner(input_stream):
         for el in input_stream:
             pass
