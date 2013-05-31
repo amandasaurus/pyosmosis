@@ -311,6 +311,38 @@ def bbox(top, left, bottom, right):
 
     return inner
 
+@pipeline_element
+def used_nodes():
+    """
+    Only returns nodes that are used in a way or relation.
+    NB: will re-order stream, nodes will come last
+    """
+    def inner(input_stream):
+        nodes = {}
+        used_nodes = set()
+        for el in input_stream:
+            if isinstance(el, Node):
+                nodes[el.attrs['id']] = el
+            elif isinstance(el, Way):
+                used_nodes.update(el.node_ids)
+                yield el
+            elif isinstance(el, Relation):
+                used_nodes.update([x['ref'] for x in el.members if x['type'] == 'node'])
+                yield el
+            else:
+                raise ValueError("Unknown element", el)
+
+        # Now spit out the nodes 
+        for node_id in used_nodes:
+            if node_id in nodes:
+                yield nodes[node_id]
+            else:
+                # log error?
+                pass
+
+
+    return inner
+
 
 class Pipeline(object):
     def __init__(self, *elements):
