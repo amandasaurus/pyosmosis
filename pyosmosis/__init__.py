@@ -36,7 +36,7 @@ def pipeline_element(func):
 def convert_values_to_args_kwargs(function, values):
     if all('=' in v for v in values):
         args = []
-        kwargs = dict(v.split("=", ) for v in values)
+        kwargs = dict(v.split("=", 1) for v in values)
     elif not all('=' in v for v in values):
         args = values
         kwargs = {}
