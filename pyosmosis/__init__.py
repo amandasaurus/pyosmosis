@@ -337,7 +337,7 @@ def bbox(top, left, bottom, right):
     return inner
 
 @pipeline_element
-def used_nodes():
+def used_node():
     """
     Only returns nodes that are used in a way or relation.
     NB: will re-order stream, nodes will come last
